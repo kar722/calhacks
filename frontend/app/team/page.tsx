@@ -28,8 +28,8 @@ export default function TeamPage() {
 
           <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-2">
             {teamMembers.map((member) => (
-              <Card key={member.name} className="flex flex-col items-center p-6">
-                <div className="relative mb-4 h-48 w-48 overflow-hidden rounded-full">
+              <Card key={member.name} className="flex flex-col items-center p-3">
+                <div className="relative mb-1 h-28 w-28 overflow-hidden rounded-full">
                   <Image
                     src={member.image}
                     alt={member.name}
@@ -37,11 +37,12 @@ export default function TeamPage() {
                     className="object-cover"
                   />
                 </div>
-                <h3 className="text-xl font-semibold">{member.name}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">School: {member.school}</p>
-                <p className="mt-1 text-sm text-muted-foreground">Major: {member.major}</p>
-                <p className="mt-1 text-sm text-muted-foreground">Year: {member.year}</p>
-                <p className="mt-1 text-sm text-muted-foreground">Hometown: {member.hometown}</p>
+                <h3 className="text-lg font-semibold">{member.name}</h3>
+                <div className="space-y-0.5 text-sm text-muted-foreground">
+                  <p>School: {member.school}</p>
+                  <p>Major: {member.major}</p>
+                  <p>Hometown: {member.hometown}</p>
+                </div>
               </Card>
             ))}
           </div>
