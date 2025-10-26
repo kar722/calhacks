@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, FileText, ArrowRight, Info } from "lucide-react"
+import { Upload, FileText, ArrowRight, Info, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+
+const BACKEND_URL = "http://127.0.0.1:8000"
 
 const US_STATES = [
   "Alabama",
@@ -73,6 +75,8 @@ export default function StartPage() {
   const [policeReport, setPoliceReport] = useState<File | null>(null)
   const [courtSentencing, setCourtSentencing] = useState<File | null>(null)
   const [draggingField, setDraggingField] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -110,38 +114,63 @@ export default function StartPage() {
   }
 
   const handleContinue = async () => {
-    if (selectedState && (courtSummons || policeReport || courtSentencing)) {
-      // Store state
-      sessionStorage.setItem("selectedState", selectedState)
+    if (!selectedState || (!courtSummons && !policeReport && !courtSentencing)) {
+      setError("Please select your state and upload at least one document")
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // Create FormData with the PDF files
+      const formData = new FormData()
       
-      try {
-        // Extract data from PDFs using the /pdf-parser endpoint
-        const formData = new FormData()
-        if (courtSummons) formData.append("summons", courtSummons)
-        if (policeReport) formData.append("police", policeReport)
-        if (courtSentencing) formData.append("sentencing", courtSentencing)
-        
-        const response = await fetch("http://127.0.0.1:8000/pdf-parser", {
-          method: "POST",
-          body: formData,
-        })
-        
-        if (response.ok) {
-          const extractedData = await response.json()
-          sessionStorage.setItem("pdfData", JSON.stringify(extractedData))
-          console.log("PDF data extracted successfully")
-        } else {
-          console.error("Failed to extract PDF data - API may not be running")
-          // Store placeholder data so the app can continue
-          sessionStorage.setItem("pdfData", JSON.stringify({}))
-        }
-      } catch (error) {
-        console.error("Error extracting PDF data - API may not be running:", error)
-        // Store placeholder data so the app can continue
-        sessionStorage.setItem("pdfData", JSON.stringify({}))
+      if (courtSummons) {
+        formData.append("summons", courtSummons)
       }
+      if (courtSentencing) {
+        formData.append("sentencing", courtSentencing)
+      }
+      if (policeReport) {
+        formData.append("police", policeReport)
+      }
+
+      // Call the backend PDF parser endpoint
+      const response = await fetch(`${BACKEND_URL}/pdf-parser`, {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to parse PDFs: ${response.statusText}`)
+      }
+
+      // Parse the JSON response
+      const parsedData = await response.json()
       
+      // Log the response for debugging
+      console.log("📄 PDF Parser Response:", parsedData)
+      console.log("================================")
+      console.log("Case Number:", parsedData.case_number)
+      console.log("Name:", parsedData.name)
+      console.log("City/County:", parsedData.city_or_county)
+      console.log("Violations:", parsedData.violations_charged_with)
+      console.log("================================")
+
+      // Store the parsed data in sessionStorage for the next page
+      sessionStorage.setItem("selectedState", selectedState)
+      sessionStorage.setItem("parsedCaseData", JSON.stringify(parsedData))
+      
+      const filesCount = [courtSummons, policeReport, courtSentencing].filter(Boolean).length
+      sessionStorage.setItem("uploadedFilesCount", filesCount.toString())
+
+      // Navigate to the next page
       router.push("/conversation")
+    } catch (err) {
+      console.error("Error parsing PDFs:", err)
+      setError(err instanceof Error ? err.message : "Failed to parse documents. Please try again.")
+      setIsLoading(false)
     }
   }
 
@@ -295,17 +324,44 @@ export default function StartPage() {
             </div>
           </Card>
 
+          {/* Error Alert */}
+          {error && (
+            <Alert variant="destructive" className="mt-6">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Continue Button */}
           <div className="mt-8 flex justify-end">
-            <Button size="lg" onClick={handleContinue} disabled={!canContinue} className="gap-2">
-              Continue to Voice Interview
-              <ArrowRight className="h-4 w-4" />
+            <Button 
+              size="lg" 
+              onClick={handleContinue} 
+              disabled={!canContinue || isLoading} 
+              className="gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing Documents...
+                </>
+              ) : (
+                <>
+                  Continue to Voice Interview
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
             </Button>
           </div>
 
-          {!canContinue && (
+          {!canContinue && !isLoading && (
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Please select your state and upload at least one court document to continue
+            </p>
+          )}
+
+          {isLoading && (
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Extracting information from your documents using AI...
             </p>
           )}
         </div>
