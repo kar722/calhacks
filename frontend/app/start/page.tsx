@@ -137,7 +137,7 @@ export default function StartPage() {
       }
 
       // Call the backend PDF parser endpoint
-      const response = await fetch(`${BACKEND_URL}/pdf-parser`, {
+      const response = await fetch(`${BACKEND_URL}/extract`, {
         method: "POST",
         body: formData,
       })
