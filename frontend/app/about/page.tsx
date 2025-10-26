@@ -53,13 +53,6 @@ export default function AboutPage() {
                 </p>
               </Card>
               <Card className="p-6">
-                <h3 className="font-semibold">Language Barriers</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Legal documents and court processes are typically only available in English, creating barriers for
-                  non-English speakers who could benefit from expungement.
-                </p>
-              </Card>
-              <Card className="p-6">
                 <h3 className="font-semibold">High Costs</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   Hiring an attorney for expungement can cost thousands of dollars, putting it out of reach for many
@@ -104,9 +97,9 @@ export default function AboutPage() {
                   <div>
                     <h3 className="font-semibold">Accessible to All</h3>
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      ClearPath AI is available in multiple languages and uses voice technology so you can speak your
-                      answers instead of filling out complicated forms. Our service is free because we believe access to
-                      justice shouldn't depend on your ability to pay.
+                      ClearPath AI uses voice technology so you can speak your answers instead of filling out
+                      complicated forms. Our service is free because we believe access to justice shouldn't depend on
+                      your ability to pay.
                     </p>
                   </div>
                 </div>
@@ -174,8 +167,8 @@ export default function AboutPage() {
                 <p className="mt-2 text-sm text-muted-foreground">States Supported</p>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-primary">2</div>
-                <p className="mt-2 text-sm text-muted-foreground">Languages Available</p>
+                <div className="text-4xl font-bold text-primary">100%</div>
+                <p className="mt-2 text-sm text-muted-foreground">Confidential</p>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold text-primary">Free</div>
