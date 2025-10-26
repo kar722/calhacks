@@ -27,6 +27,12 @@ export function Header() {
             About
           </Link>
           <Link
+            href="/team"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Team
+          </Link>
+          <Link
             href="/faqs"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
@@ -50,6 +56,13 @@ export function Header() {
               onClick={() => setMobileMenuOpen(false)}
             >
               About
+            </Link>
+            <Link
+              href="/team"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Team
             </Link>
             <Link
               href="/faqs"
