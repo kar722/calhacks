@@ -5,10 +5,10 @@ import Image from "next/image"
 
 export default function TeamPage() {
   const teamMembers = [
-    { name: "Karthik Valluri", image: "/karthiklinkedin.jpeg", major: "Data Science", year: "Sophomore", school: "UC Berkeley", hometown: "San Diego" },
-    { name: "Sierra Meisel", image: "/sierralinkedin.jpeg", major: "Data Science", year: "Sophomore", school: "UC Berkeley", hometown: "Cupertino" },
-    { name: "Thomas Lien", image: "/thomaslinkedin.jpeg", major: "Electrical Engineering", year: "Sophomore", school: "UCLA", hometown: "San Diego" },
-    { name: "Alisha Luc", image: "/alishalinkedin.jpeg", major: "Data Science", year: "Sophomore", school: "UC Berkeley", hometown: "Cupertino" },
+    { name: "Karthik Valluri", image: "/karthiklinkedin.jpeg", major: "Data Science", school: "UC Berkeley", hometown: "San Diego" },
+    { name: "Sierra Meisel", image: "/sierralinkedin.jpeg", major: "Data Science", school: "UC Berkeley", hometown: "Cupertino" },
+    { name: "Thomas Lien", image: "/thomaslinkedin.jpeg", major: "Electrical Engineering", school: "UCLA", hometown: "Carlsbad" },
+    { name: "Alisha Luc", image: "/alishalinkedin.jpeg", major: "Data Science", school: "UC Berkeley", hometown: "Cupertino" },
   ]
 
   return (
