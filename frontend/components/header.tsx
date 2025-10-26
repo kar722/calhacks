@@ -32,14 +32,6 @@ export function Header() {
           >
             FAQs
           </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/signin">Sign In</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/signup">Sign Up</Link>
-            </Button>
-          </div>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -66,18 +58,6 @@ export function Header() {
             >
               FAQs
             </Link>
-            <div className="flex flex-col gap-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/signin" onClick={() => setMobileMenuOpen(false)}>
-                  Sign In
-                </Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
-                  Sign Up
-                </Link>
-              </Button>
-            </div>
           </nav>
         </div>
       )}

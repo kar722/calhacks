@@ -112,15 +112,6 @@ export default function FAQsPage() {
                   reflect changes in state laws and court procedures.
                 </AccordionContent>
               </AccordionItem>
-
-              <AccordionItem value="item-10">
-                <AccordionTrigger className="text-left">Can I use ClearPath AI in Spanish?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed">
-                  Yes! ClearPath AI is available in both English and Spanish. Our voice assistant can understand and
-                  respond in either language, and all forms and documentation can be provided in your preferred
-                  language. We're committed to making expungement accessible to all communities.
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
           </Card>
 
