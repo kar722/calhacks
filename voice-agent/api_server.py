@@ -10,6 +10,9 @@ from pathlib import Path
 import json
 import sys
 import os
+import jwt
+import time
+from datetime import datetime, timedelta
 
 # Add src directory to path to import parser
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +31,42 @@ app.add_middleware(
 )
 
 SESSION_DIR = Path("/tmp/livekit_session")
+
+# Get LiveKit credentials from environment
+LIVEKIT_URL = os.getenv("LIVEKIT_URL")
+LIVEKIT_API_KEY = os.getenv("LIVEKIT_API_KEY")
+LIVEKIT_API_SECRET = os.getenv("LIVEKIT_API_SECRET")
+
+
+@app.post("/api/token")
+async def create_token():
+    """Generate a LiveKit token for frontend to connect"""
+    if not LIVEKIT_URL or not LIVEKIT_API_KEY or not LIVEKIT_API_SECRET:
+        raise HTTPException(status_code=500, detail="LiveKit credentials not configured")
+    
+    # Generate a unique room name
+    room_name = f"room_{int(time.time())}"
+    participant_name = "user"
+    
+    # Create LiveKit token
+    token = jwt.encode(
+        {
+            "iss": LIVEKIT_API_KEY,
+            "sub": participant_name,
+            "iat": int(time.time()),
+            "exp": int(time.time()) + 3600,  # 1 hour expiration
+            "video": {"room": room_name, "roomJoin": True},
+            "audio": {"room": room_name, "roomJoin": True},
+        },
+        LIVEKIT_API_SECRET,
+        algorithm="HS256"
+    )
+    
+    return {
+        "url": LIVEKIT_URL,
+        "token": token,
+        "room": room_name
+    }
 
 
 @app.get("/api/health")
@@ -112,6 +151,38 @@ async def get_latest_qa():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+from livekit import api
+
+@app.post("/api/start-agent")
+async def start_agent(request: dict):
+    """
+    Start the LiveKit voice agent in a specific room.
+    """
+    room_name = request.get("room")
+    if not room_name:
+        raise HTTPException(status_code=400, detail="Room name is required")
+
+    try:
+        lk = api.LiveKitAPI(
+            url=LIVEKIT_URL,
+            api_key=LIVEKIT_API_KEY,
+            api_secret=LIVEKIT_API_SECRET,
+        )
+
+        # Ensure room exists or create it
+        await lk.room.create(room_name)
+
+        # Start the agent worker
+        await lk.agent.start(
+            agent_id="expungement-agent",   # this must match the ID you configure in your worker
+            room=room_name,
+        )
+
+        return {"status": "agent_started", "room": room_name}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == '__main__':
     # Make sure session directory exists
     SESSION_DIR.mkdir(parents=True, exist_ok=True)
@@ -122,8 +193,10 @@ if __name__ == '__main__':
     print(f"\nAPI endpoints:")
     print(f"  GET /api/health - Health check")
     print(f"  GET /api/sessions - List all sessions")
+    print(f"  POST /api/token - Generate LiveKit connection token")
     print(f"  GET /api/latest - Get most recent session")
     print(f"  GET /api/latest/qa - Get parsed Q&A for most recent session")
+    print(f"  POST /api/latest/qa - Send parsed Q&A JSON (use this!)")
     print(f"  GET /api/session/{{session_id}} - Get specific session")
     print(f"  GET /api/session/{{session_id}}/qa - Get parsed Q&A for specific session")
     
