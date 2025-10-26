@@ -1,14 +1,12 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Mic, MicOff, Volume2, ArrowRight } from "lucide-react"
+import { Mic, MicOff, Volume2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 type Message = {
@@ -30,8 +28,6 @@ export default function ConversationPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isListening, setIsListening] = useState(false)
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const [userInput, setUserInput] = useState("")
   const [selectedState, setSelectedState] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -45,7 +41,7 @@ export default function ConversationPage() {
     // Start with first question
     const firstMessage: Message = {
       role: "assistant",
-      content: `Hello! I'm here to help you understand your eligibility for expungement in ${state || "your state"}. I'll ask you a few questions about your case. You can speak your answers or type them. Let's begin.`,
+      content: `Hello! I'm here to help you understand your eligibility for expungement in ${state || "your state"}. I'll ask you a few questions about your case. You can speak your answers using the microphone. Let's begin.`,
       timestamp: new Date(),
     }
     setMessages([firstMessage])
@@ -71,7 +67,6 @@ export default function ConversationPage() {
     setTimeout(() => {
       setIsListening(false)
       const simulatedResponse = "I was convicted of a misdemeanor theft charge in 2018."
-      setUserInput(simulatedResponse)
       handleSendMessage(simulatedResponse)
     }, 3000)
   }
@@ -90,7 +85,6 @@ export default function ConversationPage() {
       timestamp: new Date(),
     }
     setMessages((prev) => [...prev, userMessage])
-    setUserInput("")
 
     // Simulate AI processing and next question
     setTimeout(() => {
@@ -123,13 +117,6 @@ export default function ConversationPage() {
     }, 1500)
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage(userInput)
-    }
-  }
-
   const progress = ((currentQuestionIndex + 1) / SAMPLE_QUESTIONS.length) * 100
 
   return (
@@ -156,7 +143,7 @@ export default function ConversationPage() {
           <div className="text-center">
             <h1 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">Voice Interview</h1>
             <p className="mt-4 text-pretty text-muted-foreground leading-relaxed">
-              Answer a few questions to help us determine your eligibility. You can speak or type your responses.
+              Answer a few questions to help us determine your eligibility. Click the microphone to speak your responses.
             </p>
           </div>
 
@@ -205,45 +192,28 @@ export default function ConversationPage() {
                 <AlertDescription className="text-sm">
                   {isListening
                     ? "Listening... Speak now"
-                    : "Click the microphone to speak, or type your response below"}
+                    : "Click the microphone button below to speak your response"}
                 </AlertDescription>
               </Alert>
 
-              <div className="flex gap-2">
+              <div className="flex justify-center">
                 <Button
                   size="lg"
-                  variant={isListening ? "destructive" : "outline"}
-                  className="shrink-0"
+                  variant={isListening ? "destructive" : "default"}
+                  className="w-full sm:w-auto"
                   onClick={isListening ? handleStopListening : handleStartListening}
                 >
                   {isListening ? (
                     <>
-                      <MicOff className="h-5 w-5" />
+                      <MicOff className="h-5 w-5 mr-2" />
+                      Stop Recording
                     </>
                   ) : (
                     <>
-                      <Mic className="h-5 w-5" />
+                      <Mic className="h-5 w-5 mr-2" />
+                      Speak Your Response
                     </>
                   )}
-                </Button>
-
-                <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Or type your response here..."
-                  className="flex-1 rounded-lg border border-input bg-background px-4 py-2 text-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
-                  disabled={isListening}
-                />
-
-                <Button
-                  size="lg"
-                  onClick={() => handleSendMessage(userInput)}
-                  disabled={!userInput.trim() || isListening}
-                >
-                  Send
-                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
