@@ -16,6 +16,7 @@ __pycache__/
 
 # ChromaDB database
 rag/chroma_db/
+backend/chroma_db/
 chromdb/
 
 # IDE

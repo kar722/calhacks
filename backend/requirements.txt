@@ -1,0 +1,15 @@
+# Core API Framework
+fastapi==0.120.0
+uvicorn[standard]==0.38.0
+python-multipart
+python-dotenv==1.1.1
+
+# PDF Processing & AI
+PyPDF2
+google-generativeai
+
+# Vector Database & RAG
+chromadb==1.2.1
+langchain-chroma==1.0.0
+langchain-openai==1.0.1
+
