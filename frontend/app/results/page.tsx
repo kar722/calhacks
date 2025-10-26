@@ -377,10 +377,12 @@ export default function ResultsPage() {
               <Download className="h-4 w-4" />
               Download Report
             </Button>
-            <Button size="lg" variant="outline" className="gap-2 bg-transparent">
-              <FileText className="h-4 w-4" />
-              Complete Forms
-            </Button>
+            {results.eligible && (
+              <Button size="lg" variant="outline" className="gap-2 bg-transparent">
+                <FileText className="h-4 w-4" />
+                Complete Forms
+              </Button>
+            )}
             <Button size="lg" variant="outline" asChild>
               <a href="/" className="gap-2">
                 Return Home
