@@ -69,48 +69,113 @@ const US_STATES = [
 export default function StartPage() {
   const router = useRouter()
   const [selectedState, setSelectedState] = useState<string>("")
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [isDragging, setIsDragging] = useState(false)
+  const [courtSummons, setCourtSummons] = useState<File | null>(null)
+  const [policeReport, setPoliceReport] = useState<File | null>(null)
+  const [courtSentencing, setCourtSentencing] = useState<File | null>(null)
+  const [draggingField, setDraggingField] = useState<string | null>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files)
-      setUploadedFiles((prev) => [...prev, ...newFiles])
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+      if (field === "summons") setCourtSummons(file)
+      else if (field === "police") setPoliceReport(file)
+      else if (field === "sentencing") setCourtSentencing(file)
     }
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, field: string) => {
     e.preventDefault()
-    setIsDragging(true)
+    setDraggingField(field)
   }
 
   const handleDragLeave = () => {
-    setIsDragging(false)
+    setDraggingField(null)
   }
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent, field: string) => {
     e.preventDefault()
-    setIsDragging(false)
-    if (e.dataTransfer.files) {
-      const newFiles = Array.from(e.dataTransfer.files)
-      setUploadedFiles((prev) => [...prev, ...newFiles])
+    setDraggingField(null)
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0]
+      if (field === "summons") setCourtSummons(file)
+      else if (field === "police") setPoliceReport(file)
+      else if (field === "sentencing") setCourtSentencing(file)
     }
   }
 
-  const removeFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index))
+  const removeFile = (field: string) => {
+    if (field === "summons") setCourtSummons(null)
+    else if (field === "police") setPoliceReport(null)
+    else if (field === "sentencing") setCourtSentencing(null)
   }
 
   const handleContinue = () => {
-    if (selectedState && uploadedFiles.length > 0) {
+    if (selectedState && (courtSummons || policeReport || courtSentencing)) {
       // Store state and files in sessionStorage for next step
       sessionStorage.setItem("selectedState", selectedState)
-      sessionStorage.setItem("uploadedFilesCount", uploadedFiles.length.toString())
+      const filesCount = [courtSummons, policeReport, courtSentencing].filter(Boolean).length
+      sessionStorage.setItem("uploadedFilesCount", filesCount.toString())
       router.push("/conversation")
     }
   }
 
-  const canContinue = selectedState && uploadedFiles.length > 0
+  const canContinue = selectedState && (courtSummons || policeReport || courtSentencing)
+
+  const renderUploadBox = (field: string, label: string, description: string) => {
+    const isDragging = draggingField === field
+    const file = field === "summons" ? courtSummons : field === "police" ? policeReport : courtSentencing
+    
+    return (
+      <div className="space-y-2">
+        <Label className="text-sm font-semibold">{label}</Label>
+        <p className="text-xs text-muted-foreground">{description}</p>
+        <div
+          onDragOver={(e) => handleDragOver(e, field)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, field)}
+          className={`relative flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
+            isDragging
+              ? "border-primary bg-primary/5"
+              : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
+          }`}
+        >
+          <input
+            type="file"
+            id={`file-upload-${field}`}
+            accept=".pdf"
+            onChange={(e) => handleFileChange(e, field)}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+          {!file && (
+            <>
+              <Upload className="h-8 w-8 text-muted-foreground" />
+              <p className="mt-2 text-xs font-medium">Drag and drop or click to upload PDF</p>
+            </>
+          )}
+          {file && (
+            <div className="flex items-center gap-3 p-2">
+              <FileText className="h-8 w-8 text-primary" />
+              <div className="text-center">
+                <p className="text-xs font-medium">{file.name}</p>
+                <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  removeFile(field)
+                }}
+                className="text-destructive hover:text-destructive"
+              >
+                Remove
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -136,7 +201,7 @@ export default function StartPage() {
           <div className="text-center">
             <h1 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">Let's Get Started</h1>
             <p className="mt-4 text-pretty text-muted-foreground leading-relaxed">
-              First, we need to know your state and review your court documents to determine your eligibility.
+              First, we need to know your state and review your court documents to determine your eligibility. Please upload your court summons, police report, and court sentencing documents.
             </p>
           </div>
 
@@ -168,12 +233,11 @@ export default function StartPage() {
 
           {/* Document Upload */}
           <Card className="mt-6 p-6">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
                 <Label className="text-base font-semibold">Upload Court Documents</Label>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Upload any court documents, conviction records, or case information you have. Accepted formats: PDF,
-                  JPG, PNG.
+                  Upload your court documents. Accepted format: PDF only.
                 </p>
               </div>
 
@@ -184,60 +248,24 @@ export default function StartPage() {
                 </AlertDescription>
               </Alert>
 
-              {/* Drop Zone */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
-                  isDragging
-                    ? "border-primary bg-primary/5"
-                    : "border-border bg-muted/30 hover:border-primary/50 hover:bg-muted/50"
-                }`}
-              >
-                <input
-                  type="file"
-                  id="file-upload"
-                  multiple
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 cursor-pointer opacity-0"
-                />
-                <Upload className="h-10 w-10 text-muted-foreground" />
-                <p className="mt-4 text-sm font-medium">Drag and drop files here, or click to browse</p>
-                <p className="mt-1 text-xs text-muted-foreground">PDF, JPG, or PNG (max 10MB per file)</p>
+              {/* Three Separate Upload Boxes */}
+              <div className="grid gap-4 md:grid-cols-1">
+                {renderUploadBox(
+                  "summons",
+                  "Court Summons",
+                  "Upload your court summons document"
+                )}
+                {renderUploadBox(
+                  "police",
+                  "Police Report",
+                  "Upload your police report or incident report"
+                )}
+                {renderUploadBox(
+                  "sentencing",
+                  "Court Sentencing",
+                  "Upload your court sentencing or conviction record"
+                )}
               </div>
-
-              {/* Uploaded Files List */}
-              {uploadedFiles.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Uploaded Files ({uploadedFiles.length})</Label>
-                  <div className="space-y-2">
-                    {uploadedFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between rounded-lg border border-border bg-card p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <FileText className="h-5 w-5 text-primary" />
-                          <div>
-                            <p className="text-sm font-medium">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </Card>
 
@@ -251,7 +279,7 @@ export default function StartPage() {
 
           {!canContinue && (
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Please select your state and upload at least one document to continue
+              Please select your state and upload at least one court document to continue
             </p>
           )}
         </div>

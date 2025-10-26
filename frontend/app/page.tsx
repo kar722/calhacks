@@ -56,7 +56,7 @@ export default function HomePage() {
               </div>
               <h3 className="mt-4 font-semibold">Step 1: Upload Documents</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                Select your state and securely upload your court documents for analysis.
+                Select your state and securely upload your court summons, police report, and sentencing documents.
               </p>
             </Card>
 
