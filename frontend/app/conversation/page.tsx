@@ -58,7 +58,7 @@ export default function ConversationPage() {
   }, [])
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "nearest" })
   }, [messages])
 
   const handleStartListening = () => {
@@ -163,7 +163,7 @@ export default function ConversationPage() {
           </div>
 
           {/* Conversation Area */}
-          <Card className="mt-8 flex min-h-[400px] flex-col">
+          <Card className="mt-8 flex h-[500px] flex-col">
             {/* Messages */}
             <div className="flex-1 space-y-4 overflow-y-auto p-6">
               {messages.map((message, index) => (
