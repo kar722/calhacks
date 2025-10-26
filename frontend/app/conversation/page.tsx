@@ -86,9 +86,12 @@ export default function ConversationPage() {
     }
     setMessages((prev) => [...prev, userMessage])
 
+    // Update the question index immediately
+    const nextIndex = currentQuestionIndex + 1
+    setCurrentQuestionIndex(nextIndex)
+
     // Simulate AI processing and next question
     setTimeout(() => {
-      const nextIndex = currentQuestionIndex + 1
       if (nextIndex < SAMPLE_QUESTIONS.length) {
         const nextQuestion: Message = {
           role: "assistant",
@@ -96,7 +99,6 @@ export default function ConversationPage() {
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, nextQuestion])
-        setCurrentQuestionIndex(nextIndex)
       } else {
         // All questions answered
         const finalMessage: Message = {
