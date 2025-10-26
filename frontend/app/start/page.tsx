@@ -109,12 +109,38 @@ export default function StartPage() {
     else if (field === "sentencing") setCourtSentencing(null)
   }
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedState && (courtSummons || policeReport || courtSentencing)) {
-      // Store state and files in sessionStorage for next step
+      // Store state
       sessionStorage.setItem("selectedState", selectedState)
-      const filesCount = [courtSummons, policeReport, courtSentencing].filter(Boolean).length
-      sessionStorage.setItem("uploadedFilesCount", filesCount.toString())
+      
+      try {
+        // Extract data from PDFs using the /pdf-parser endpoint
+        const formData = new FormData()
+        if (courtSummons) formData.append("summons", courtSummons)
+        if (policeReport) formData.append("police", policeReport)
+        if (courtSentencing) formData.append("sentencing", courtSentencing)
+        
+        const response = await fetch("http://127.0.0.1:8000/pdf-parser", {
+          method: "POST",
+          body: formData,
+        })
+        
+        if (response.ok) {
+          const extractedData = await response.json()
+          sessionStorage.setItem("pdfData", JSON.stringify(extractedData))
+          console.log("PDF data extracted successfully")
+        } else {
+          console.error("Failed to extract PDF data - API may not be running")
+          // Store placeholder data so the app can continue
+          sessionStorage.setItem("pdfData", JSON.stringify({}))
+        }
+      } catch (error) {
+        console.error("Error extracting PDF data - API may not be running:", error)
+        // Store placeholder data so the app can continue
+        sessionStorage.setItem("pdfData", JSON.stringify({}))
+      }
+      
       router.push("/conversation")
     }
   }

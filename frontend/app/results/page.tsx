@@ -69,85 +69,18 @@ export default function ResultsPage() {
       setSelectedState(state)
     }
 
-    // TODO: Replace with actual API call when FastAPI endpoint is ready
-    // For now, we'll use a mock fetch to demonstrate the structure
     const fetchResults = async () => {
       try {
-        // TODO: Replace this URL with your actual FastAPI endpoint
-        // const response = await fetch('http://localhost:8000/api/eligibility-check')
-        // const data = await response.json()
+        // Get results from sessionStorage (stored by conversation page)
+        const resultsStr = sessionStorage.getItem("eligibilityResults")
         
-        // Mock data for demonstration - replace with actual API call above
-        const mockData: EligibilityResults = {
-          eligible: true,
-          confidence: 95,
-          key_findings: [
-            {
-              title: "Conviction Type Eligible",
-              description: "The convictions for Penal Code § 484(a) and Penal Code § 148(a)(1) are misdemeanors and are not among the excluded offenses for expungement."
-            },
-            {
-              title: "Waiting Period Met",
-              description: "More than one year has elapsed since the conviction date of May 14, 2021, and all probation terms have been completed."
-            },
-            {
-              title: "No Disqualifying Factors",
-              description: "The petitioner is not currently serving a sentence, not on probation, and has no pending charges."
-            }
-          ],
-          next_steps: [
-            "Download the CR-180 form for petitioning for dismissal.",
-            "Complete the CR-180 form with the necessary details regarding the conviction.",
-            "File the completed CR-180 form with the court in Los Angeles."
-          ],
-          retrieved_chunks: [
-            {
-              content: "Section 3: Misdemeanor or infraction with sentence other than probation (Pen. Code, § 1203.4a)\nProbation was not granted; more than one year has elapsed since judgment was pronounced. Petitioner has c...",
-              metadata: {
-                form_name: "CR-180",
-                section_number: 3,
-                doc_type: "form_petition",
-                section: "section_3"
-              }
-            },
-            {
-              content: "Section 2: Felony or misdemeanor with probation granted (Pen. Code, § 1203.4)\nProbation was granted on the terms and conditions stated in the docket of the above-entitled court; the petitioner is not ...",
-              metadata: {
-                form_name: "CR-180",
-                doc_type: "form_petition",
-                section: "section_2",
-                section_number: 2
-              }
-            },
-            {
-              content: "You are NOT eligible if: + Probation was revoked in a case and not later reinstated.",
-              metadata: {
-                doc_type: "eligibility_negative",
-                condition_number: 4
-              }
-            },
-            {
-              content: "You are NOT eligible if: + You cannot dismiss any misdemeanor that is within the provisions of Z VC 42001 (b); or any violation of the following: Z PC 286(c); B PC 288;",
-              metadata: {
-                doc_type: "eligibility_negative",
-                penal_codes: "Z PC 286, B PC 288",
-                condition_number: 6
-              }
-            },
-            {
-              content: "Section 4: Misdemeanor conviction under Penal Code section 647(b) (Pen. Code, § 1203.49)\nPetitioner has completed a term of probation for a conviction under Penal Code section 647(b) and should be gra...",
-              metadata: {
-                section_number: 4,
-                penal_codes: "Penal Code section 647",
-                section: "section_4",
-                doc_type: "form_petition",
-                form_name: "CR-180"
-              }
-            }
-          ]
+        if (resultsStr) {
+          const eligibilityData = JSON.parse(resultsStr)
+          setResults(eligibilityData)
+        } else {
+          setError("No eligibility results found. Please start over.")
         }
         
-        setResults(mockData)
         setIsLoading(false)
       } catch (err) {
         setError("Failed to load eligibility results. Please try again.")

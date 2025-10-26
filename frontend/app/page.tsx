@@ -31,10 +31,6 @@ export default function HomePage() {
               </Link>
             </Button>
           </div>
-          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Globe className="h-4 w-4" />
-            <span>Available in English and Spanish</span>
-          </div>
         </div>
       </section>
 
