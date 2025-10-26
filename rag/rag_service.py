@@ -33,32 +33,44 @@ vectorstore = Chroma(
 def format_user_context(user_data: dict) -> str:
     """
     Convert user data dictionary into structured text for the LLM
+    Handles merged JSON from court documents + questionnaire
     """
     context_parts = []
     
-    # Current Status
-    context_parts.append("CURRENT STATUS:")
-    context_parts.append(f"- Currently serving a sentence: {user_data.get('serving_sentence', 'Unknown')}")
-    context_parts.append(f"- Currently on probation: {user_data.get('on_probation', 'Unknown')}")
-    context_parts.append(f"- Currently charged with a crime: {user_data.get('pending_charges', 'Unknown')}")
+    # Case Information
+    context_parts.append("CASE INFORMATION:")
+    context_parts.append(f"- Case Number: {user_data.get('case_number', 'Unknown')}")
+    context_parts.append(f"- Court: {user_data.get('city_or_county', 'Unknown')}")
+    context_parts.append(f"- Defendant Name: {user_data.get('name', 'Unknown')}")
     
-    # Probation Details
-    context_parts.append("\nPROBATION DETAILS:")
-    context_parts.append(f"- Probation was granted: {user_data.get('probation_granted', 'Unknown')}")
-    context_parts.append(f"- Probation completed: {user_data.get('probation_completed', 'Unknown')}")
-    context_parts.append(f"- All probation conditions fulfilled: {user_data.get('probation_conditions_met', 'Unknown')}")
+    # Conviction Details
+    context_parts.append("\nCONVICTION DETAILS:")
+    context_parts.append(f"- Conviction Type: {user_data.get('conviction_type', 'Unknown')}")
+    context_parts.append(f"- Conviction Date: {user_data.get('date', 'Unknown')}")
     
-    # Financial
-    context_parts.append("\nFINANCIAL OBLIGATIONS:")
-    context_parts.append(f"- All fines paid: {user_data.get('fines_paid', 'Unknown')}")
-    context_parts.append(f"- All restitution paid: {user_data.get('restitution_paid', 'Unknown')}")
+    # Format violations/charges
+    violations = user_data.get('violations_charged_with', [])
+    if violations:
+        violations_str = ', '.join(violations) if isinstance(violations, list) else violations
+        context_parts.append(f"- Charges: {violations_str}")
     
-    # Case Details (if available)
-    if 'conviction_type' in user_data:
-        context_parts.append("\nCASE DETAILS:")
-        context_parts.append(f"- Conviction type: {user_data.get('conviction_type', 'Unknown')}")
-        context_parts.append(f"- Conviction date: {user_data.get('conviction_date', 'Unknown')}")
-        context_parts.append(f"- Charges: {user_data.get('charges', 'Unknown')}")
+    # Sentencing Information
+    if 'sentencing' in user_data:
+        context_parts.append(f"- Sentencing: {user_data.get('sentencing')}")
+    
+    if 'fine' in user_data:
+        context_parts.append(f"- Fine Amount: ${user_data.get('fine', 0)}")
+    
+    if 'further_instruction' in user_data:
+        context_parts.append(f"- Special Conditions: {user_data.get('further_instruction')}")
+    
+    # Current Status (from questionnaire) - BE EXPLICIT
+    context_parts.append("\nCURRENT STATUS:")
+    context_parts.append(f"- Currently serving sentence: No" if not user_data.get('pending_charges_or_cases') else f"- Currently serving sentence: Unknown")
+    context_parts.append(f"- Currently on probation: No" if user_data.get('terms_of_service_completed') else f"- Currently on probation: Yes or Unknown")
+    context_parts.append(f"- Pending charges or cases: {'Yes - DISQUALIFIED' if user_data.get('pending_charges_or_cases') else 'No'}")
+    context_parts.append(f"- All probation terms completed: {'Yes' if user_data.get('terms_of_service_completed') else 'No - DISQUALIFIED'}")
+    context_parts.append(f"- Other convictions on record: {'Yes' if user_data.get('other_convictions') else 'No'}")
     
     return "\n".join(context_parts)
 
@@ -88,13 +100,18 @@ def check_eligibility(user_data: dict) -> dict:
     ])
     
     # Create the prompt
-    prompt = f"""You are an expert on California expungement law. Analyze the user's eligibility for expungement.
+    prompt = f"""You are an expert on California expungement law under PC 1203.4. Analyze the user's eligibility for expungement.
 
 ELIGIBILITY CRITERIA FROM CALIFORNIA LAW:
 {context_text}
 
 USER'S CASE INFORMATION:
 {user_context}
+
+CRITICAL ELIGIBILITY RULES:
+1. Under PC 1203.4: ANY misdemeanor where ALL probation conditions are completed IS ELIGIBLE (unless specifically excluded)
+2. Only these specific crimes are excluded: PC 286(c), PC 288, PC 288a(c), PC 288.5, PC 289(j), VC 2800, VC 2801, VC 2803
+3. Disqualifying factors: currently serving sentence, currently on probation, pending charges, probation revoked
 
 Return ONLY a JSON object (no other text) with the following structure:
 
@@ -123,7 +140,7 @@ Return ONLY a JSON object (no other text) with the following structure:
 }}
 
 IMPORTANT RULES:
-- If ELIGIBLE: next_steps should be filing steps (Download report, Complete forms, File with court)
+- If ELIGIBLE: next_steps should be filing steps (Download CR-180 form, Complete form, File with court)
 - If NOT ELIGIBLE: next_steps should be pathway steps to become eligible
 - Return ONLY the JSON object, no other text before or after
 - confidence should be numeric (90-100 for high confidence, 60-89 for medium, 0-59 for low)
@@ -245,85 +262,3 @@ Answer:"""
         }
     
     return parsed_response
-
-
-# ============================================================================
-# TEST CASES - Mock data for testing
-# ============================================================================
-
-MOCK_ELIGIBLE_USER = {
-    "serving_sentence": False,
-    "on_probation": False,
-    "pending_charges": False,
-    "probation_granted": True,
-    "probation_completed": True,
-    "probation_conditions_met": True,
-    "fines_paid": True,
-    "restitution_paid": True,
-    "conviction_type": "misdemeanor",
-    "conviction_date": "2020-05-15",
-    "charges": "PC 496 - Receiving Stolen Property"
-}
-
-MOCK_INELIGIBLE_USER = {
-    "serving_sentence": False,
-    "on_probation": True,  # Still on probation = not eligible
-    "pending_charges": False,
-    "probation_granted": True,
-    "probation_completed": False,  # Not completed
-    "probation_conditions_met": False,
-    "fines_paid": False,  # Hasn't paid fines
-    "restitution_paid": False,
-    "conviction_type": "misdemeanor",
-    "conviction_date": "2023-01-15",
-    "charges": "PC 484 - Petty Theft"
-}
-
-MOCK_EDGE_CASE_USER = {
-    "serving_sentence": False,
-    "on_probation": False,
-    "pending_charges": True,  # Has pending charges = not eligible
-    "probation_granted": True,
-    "probation_completed": True,
-    "probation_conditions_met": True,
-    "fines_paid": True,
-    "restitution_paid": True,
-    "conviction_type": "misdemeanor",
-    "conviction_date": "2019-03-20",
-    "charges": "PC 415 - Disturbing the Peace"
-}
-
-
-def run_tests():
-    """Run test cases to demonstrate the RAG system"""
-    
-    # Test Case 1: Eligible User
-    result1 = check_eligibility(MOCK_ELIGIBLE_USER)
-    # Remove retrieved_chunks for cleaner output
-    result1_clean = {k: v for k, v in result1.items() if k != 'retrieved_chunks'}
-    print("\n=== TEST CASE 1: ELIGIBLE USER ===")
-    print(json.dumps(result1_clean, indent=2))
-    
-    # Test Case 2: Ineligible User
-    result2 = check_eligibility(MOCK_INELIGIBLE_USER)
-    result2_clean = {k: v for k, v in result2.items() if k != 'retrieved_chunks'}
-    print("\n=== TEST CASE 2: INELIGIBLE USER ===")
-    print(json.dumps(result2_clean, indent=2))
-    
-    # Test Case 3: Edge Case
-    result3 = check_eligibility(MOCK_EDGE_CASE_USER)
-    result3_clean = {k: v for k, v in result3.items() if k != 'retrieved_chunks'}
-    print("\n=== TEST CASE 3: EDGE CASE - PENDING CHARGES ===")
-    print(json.dumps(result3_clean, indent=2))
-
-
-if __name__ == "__main__":
-    # Check if OpenAI API key is set
-    if not os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY") == "your-openai-api-key-here":
-        print("❌ ERROR: Please set your OPENAI_API_KEY in the .env file")
-        print("\n1. Open .env file")
-        print("2. Replace 'your-openai-api-key-here' with your actual OpenAI API key")
-        print("3. Run this script again")
-    else:
-        run_tests()
-
