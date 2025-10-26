@@ -13,9 +13,9 @@ export function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-lg font-bold text-primary-foreground">C</span>
+            <span className="text-lg font-bold text-primary-foreground">E</span>
           </div>
-          <span className="text-xl font-semibold">ClearPath AI</span>
+          <span className="text-xl font-semibold">Expungo</span>
         </Link>
 
         {/* Desktop Navigation */}

@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ClearPath AI - Simplifying Criminal Expungement",
+  title: "Expungo - Simplifying Criminal Expungement",
   description:
     "Empowering individuals with past convictions to regain opportunities through AI-assisted expungement guidance",
   generator: "v0.app",

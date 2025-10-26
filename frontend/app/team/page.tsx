@@ -22,7 +22,7 @@ export default function TeamPage() {
               Our Team
             </h1>
             <p className="mt-4 text-pretty text-muted-foreground leading-relaxed">
-              Meet the dedicated individuals behind ClearPath AI
+              Meet the dedicated individuals behind Expungo
             </p>
           </div>
 

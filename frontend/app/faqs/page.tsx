@@ -21,7 +21,7 @@ export default function FAQsPage() {
               Frequently Asked Questions
             </h1>
             <p className="mt-4 text-pretty text-muted-foreground leading-relaxed">
-              Find answers to common questions about expungement and how ClearPath AI can help you.
+              Find answers to common questions about expungement and how Expungo can help you.
             </p>
           </div>
 
@@ -37,9 +37,9 @@ export default function FAQsPage() {
               </AccordionItem>
 
               <AccordionItem value="item-2">
-                <AccordionTrigger className="text-left">How does ClearPath AI work?</AccordionTrigger>
+                <AccordionTrigger className="text-left">How does Expungo work?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed">
-                  ClearPath AI uses artificial intelligence to analyze your case information and court documents against
+                  Expungo uses artificial intelligence to analyze your case information and court documents against
                   your state's expungement laws. Through a simple voice or text conversation, we gather the necessary
                   information to determine your eligibility and provide guidance on next steps. The entire process is
                   secure, confidential, and designed to be accessible to everyone.
@@ -61,7 +61,7 @@ export default function FAQsPage() {
                   Eligibility varies by state, but generally, misdemeanors and some non-violent felonies may qualify for
                   expungement. Factors include the type of offense, how long ago it occurred, whether you completed your
                   sentence, and your criminal history since then. Serious violent crimes and sex offenses are typically
-                  not eligible. ClearPath AI will help determine if your specific conviction qualifies in your state.
+                  not eligible. Expungo will help determine if your specific conviction qualifies in your state.
                 </AccordionContent>
               </AccordionItem>
 
@@ -69,7 +69,7 @@ export default function FAQsPage() {
                 <AccordionTrigger className="text-left">How long does the expungement process take?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed">
                   The timeline varies by state and court. After filing your petition, it typically takes 3-6 months to
-                  receive a decision. Some states have faster processes, while others may take longer. ClearPath AI
+                  receive a decision. Some states have faster processes, while others may take longer. Expungo
                   provides an eligibility assessment in minutes, and we can help you prepare the necessary forms
                   immediately. The actual court processing time is beyond our control.
                 </AccordionContent>
@@ -78,7 +78,7 @@ export default function FAQsPage() {
               <AccordionItem value="item-6">
                 <AccordionTrigger className="text-left">Do I need a lawyer?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed">
-                  While ClearPath AI can help you understand your eligibility and prepare forms, we are not a substitute
+                  While Expungo can help you understand your eligibility and prepare forms, we are not a substitute
                   for legal advice. Many people successfully complete the expungement process on their own, especially
                   for straightforward cases. However, if your case is complex or you're unsure about any aspect of the
                   process, we recommend consulting with a licensed attorney in your state.
@@ -86,9 +86,9 @@ export default function FAQsPage() {
               </AccordionItem>
 
               <AccordionItem value="item-7">
-                <AccordionTrigger className="text-left">How much does ClearPath AI cost?</AccordionTrigger>
+                <AccordionTrigger className="text-left">How much does Expungo cost?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed">
-                  ClearPath AI's eligibility assessment is free. Our mission is to make expungement accessible to
+                  Expungo's eligibility assessment is free. Our mission is to make expungement accessible to
                   everyone. There may be court filing fees required by your state when you submit your expungement
                   petition, which vary by jurisdiction. Some states offer fee waivers for those who cannot afford them.
                 </AccordionContent>
@@ -97,7 +97,7 @@ export default function FAQsPage() {
               <AccordionItem value="item-8">
                 <AccordionTrigger className="text-left">What if I'm not eligible for expungement?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed">
-                  If you're not currently eligible, ClearPath AI will explain why and, when possible, tell you when you
+                  If you're not currently eligible, Expungo will explain why and, when possible, tell you when you
                   might become eligible. Some states have waiting periods or other requirements that must be met first.
                   We can also provide information about alternative options, such as record sealing or certificates of
                   rehabilitation, depending on your state's laws.
@@ -105,9 +105,9 @@ export default function FAQsPage() {
               </AccordionItem>
 
               <AccordionItem value="item-9">
-                <AccordionTrigger className="text-left">Which states does ClearPath AI support?</AccordionTrigger>
+                <AccordionTrigger className="text-left">Which states does Expungo support?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed">
-                  ClearPath AI currently supports all 50 U.S. states. Each state has different expungement laws, and our
+                  Expungo currently supports all 50 U.S. states. Each state has different expungement laws, and our
                   AI is trained on the specific requirements for each jurisdiction. We regularly update our system to
                   reflect changes in state laws and court procedures.
                 </AccordionContent>

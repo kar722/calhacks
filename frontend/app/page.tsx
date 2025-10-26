@@ -17,7 +17,7 @@ export default function HomePage() {
             Clear Your Record, Reclaim Your Future
           </h1>
           <p className="mt-6 text-pretty text-lg text-muted-foreground leading-relaxed md:text-xl">
-            ClearPath AI empowers individuals with past convictions to regain opportunities by simplifying the
+            Expungo empowers individuals with past convictions to regain opportunities by simplifying the
             expungement process through empathetic AI assistance.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -38,7 +38,7 @@ export default function HomePage() {
       <section className="border-t border-border bg-muted/30 py-20">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">How ClearPath AI Works</h2>
+            <h2 className="text-balance text-3xl font-bold tracking-tight md:text-4xl">How Expungo Works</h2>
             <p className="mt-4 text-pretty text-muted-foreground leading-relaxed">
               Our AI-powered platform guides you through every step of the expungement process with clarity and
               compassion.

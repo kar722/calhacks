@@ -18,7 +18,7 @@ export default function AboutPage() {
               Empowering Second Chances Through Technology
             </h1>
             <p className="mt-6 text-pretty text-lg text-muted-foreground leading-relaxed">
-              ClearPath AI was created to break down the barriers that prevent people with past convictions from
+              Expungo was created to break down the barriers that prevent people with past convictions from
               accessing the opportunities they deserve.
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function AboutPage() {
                   <div>
                     <h3 className="font-semibold">Accessible to All</h3>
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      ClearPath AI uses voice technology so you can speak your answers instead of filling out
+                      Expungo uses voice technology so you can speak your answers instead of filling out
                       complicated forms. Our service is free because we believe access to justice shouldn't depend on
                       your ability to pay.
                     </p>

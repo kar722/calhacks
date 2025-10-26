@@ -61,6 +61,8 @@ export default function ResultsPage() {
   const [results, setResults] = useState<EligibilityResults | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadProgress, setDownloadProgress] = useState(0)
 
   useEffect(() => {
     // Get state from session
@@ -123,6 +125,42 @@ export default function ResultsPage() {
 
   const config = getStatusConfig()
   const StatusIcon = config.icon
+
+  const handleFormFiller = async () => {
+    setIsDownloading(true)
+    setDownloadProgress(0)
+
+    // Simulate progress
+    const interval = setInterval(() => {
+      setDownloadProgress((prev) => {
+        if (prev >= 95) {
+          clearInterval(interval)
+          return 95
+        }
+        return prev + 5
+      })
+    }, 250)
+
+    // Wait 5-6 seconds
+    await new Promise((resolve) => setTimeout(resolve, 5500))
+
+    // Download the PDF
+    const link = document.createElement('a')
+    link.href = '/cr180.pdf'
+    link.download = 'CR-180_Expungement_Form.pdf'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    setDownloadProgress(100)
+    clearInterval(interval)
+
+    // Reset after a short delay
+    setTimeout(() => {
+      setIsDownloading(false)
+      setDownloadProgress(0)
+    }, 1000)
+  }
 
   if (error) {
     return (
@@ -306,16 +344,26 @@ export default function ResultsPage() {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" className="gap-2">
-              <Download className="h-4 w-4" />
-              Download Report
-            </Button>
             {results.eligible && (
-              <Button size="lg" variant="outline" className="gap-2 bg-transparent">
+              <Button 
+                size="lg" 
+                className="gap-2"
+                onClick={handleFormFiller}
+                disabled={isDownloading}
+              >
                 <FileText className="h-4 w-4" />
-                Complete Forms
+                {isDownloading ? "Processing Form..." : "Agentic Form Filler"}
               </Button>
             )}
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="gap-2 bg-transparent"
+              onClick={() => router.push('/resources')}
+            >
+              <Info className="h-4 w-4" />
+              Additional Resources
+            </Button>
             <Button size="lg" variant="outline" asChild>
               <a href="/" className="gap-2">
                 Return Home
@@ -323,6 +371,22 @@ export default function ResultsPage() {
               </a>
             </Button>
           </div>
+
+          {/* Download Progress Bar */}
+          {isDownloading && (
+            <Card className="mt-6 p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold">Filling out your form...</h3>
+                  <span className="text-sm font-medium text-primary">{downloadProgress}%</span>
+                </div>
+                <Progress value={downloadProgress} className="h-2" />
+                <p className="text-sm text-muted-foreground">
+                  Our AI Agent is automatically filling out your CR-180 form with your case information.
+                </p>
+              </div>
+            </Card>
+          )}
         </div>
       </main>
 

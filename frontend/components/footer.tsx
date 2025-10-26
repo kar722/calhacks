@@ -8,9 +8,9 @@ export function Footer() {
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-lg font-bold text-primary-foreground">C</span>
+                <span className="text-lg font-bold text-primary-foreground">E</span>
               </div>
-              <span className="text-xl font-semibold">ClearPath AI</span>
+              <span className="text-xl font-semibold">Expungo</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
               Empowering individuals with past convictions to regain opportunities by simplifying the expungement
@@ -53,7 +53,7 @@ export function Footer() {
 
         <div className="mt-12 border-t border-border pt-8">
           <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} ClearPath AI. All rights reserved.
+            © {new Date().getFullYear()} Expungo. All rights reserved.
           </p>
         </div>
       </div>
