@@ -8,6 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 
 ---
+## Demo Video: https://www.youtube.com/watch?v=SS9HQw-BFXU
 
 ## 🎯 Problem Statement
 
